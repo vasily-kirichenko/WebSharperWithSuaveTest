@@ -40,7 +40,7 @@ module Site =
     let HomePage ctx =
         Templating.Main ctx EndPoint.Home "Home" [
             h1 [text "Say Hi to the server!"]
-            div [client <@ Client.Main() @>]
+            div [client <@ Client.main() @>]
         ]
 
     let AboutPage ctx =
