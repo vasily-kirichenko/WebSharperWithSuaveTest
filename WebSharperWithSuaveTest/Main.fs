@@ -4,14 +4,13 @@ open WebSharper
 open WebSharper.Sitelets
 open WebSharper.UI.Next
 open WebSharper.UI.Next.Server
+open WebSharper.UI.Next.Html
 
 type EndPoint =
-    | [<EndPoint "/">] Home
+    | [<EndPoint "/">] Fibonacci
     | [<EndPoint "/about">] About
 
 module Templating =
-    open WebSharper.UI.Next.Html
-
     type MainTemplate = Templating.Template<"Main.html">
 
     // Compute a menubar where the menu item for the given endpoint is active
@@ -21,7 +20,7 @@ module Templating =
                 aAttr [attr.href (ctx.Link act)] [text txt]
              ]
         [
-            li ["Home" => EndPoint.Home]
+            li ["Fibonacci" => EndPoint.Fibonacci]
             li ["About" => EndPoint.About]
         ]
 
@@ -35,28 +34,25 @@ module Templating =
         )
 
 module Site =
-    open WebSharper.UI.Next.Html
-
-    let HomePage ctx =
-        Templating.Main ctx EndPoint.Home "Home" [
-            h1 [text "Say Hi to the server!"]
+    let homePage ctx =
+        Templating.Main ctx EndPoint.Fibonacci "Fibonacci" [
             div [client <@ Client.main() @>]
         ]
 
-    let AboutPage ctx =
+    let aboutPage ctx =
         Templating.Main ctx EndPoint.About "About" [
             h1 [text "About"]
             p [text "This is a template WebSharper client-server application."]
         ]
 
-    let Main =
+    let main =
         Application.MultiPage (fun ctx endpoint ->
             match endpoint with
-            | EndPoint.Home -> HomePage ctx
-            | EndPoint.About -> AboutPage ctx
+            | EndPoint.Fibonacci -> homePage ctx
+            | EndPoint.About -> aboutPage ctx
         )
 
     open WebSharper.Suave
     open Suave.Web
 
-    do startWebServer defaultConfig (WebSharperAdapter.ToWebPart Main)
+    do startWebServer defaultConfig (WebSharperAdapter.ToWebPart main)
